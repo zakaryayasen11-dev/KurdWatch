@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="ckb" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>KURD WATCH</title>
+<link rel="icon" type="image/png" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23e63946' rx='25'/%3E%3Ctext x='50' y='68' font-size='42' text-anchor='middle' fill='white' font-weight='bold'%3E📺%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;
+  --bg2:#11111a;
+  --bg3:#1a1a2a;
+  --card:#1a1a2e;
+  --border:#ffffff15;
+  --red:#e63946;
+  --red-glow:rgba(230,57,70,0.25);
+  --text:#ffffff;
+  --text2:#a0a0c0;
+  --text3:#606080;
+  --green:#10b981;
+  --yellow:#f59e0b;
+  --gradient:linear-gradient(135deg, #e63946, #c1121f);
+}
+body.light{
+  --bg:#f0f2f8;
+  --bg2:#ffffff;
+  --bg3:#f5f7fb;
+  --card:#ffffff;
+  --border:#e2e8f0;
+  --text:#1e293b;
+  --text2:#475569;
+  --text3:#94a3b8;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;direction:rtl;transition:all 0.3s}
+.header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 2rem;height:64px;position:sticky;top:0;z-index:1000;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:10px;cursor:pointer}
+.logo-icon{width:36px;height:36px;background:var(--gradient);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 0 15px var(--red-glow)}
+.logo-text{font-size:1.15rem;font-weight:800;color:var(--text)}
+.logo-text span{color:var(--red)}
+.header-actions{display:flex;align-items:center;gap:10px}
+.btn-icon{width:38px;height:38px;border-radius:12px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);cursor:pointer}
+.btn-icon:hover{background:var(--red);color:white}
+.user-badge{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border);padding:6px 14px;border-radius:2rem;cursor:pointer}
+.user-badge:hover{border-color:var(--red);background:var(--red-glow)}
+.user-avatar{width:28px;height:28px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white}
+.auth-page{min-height:calc(100vh - 64px);display:flex;align-items:center;justify-content:center;padding:2rem}
+.auth-box{width:100%;max-width:450px;background:var(--bg2);border:1px solid var(--border);border-radius:28px;padding:2rem}
+.auth-logo{text-align:center;margin-bottom:2rem}
+.auth-logo .logo-icon{width:60px;height:60px;font-size:30px;margin:0 auto 12px}
+.auth-logo h2{font-size:1.5rem;font-weight:800}
+.auth-logo p{font-size:0.8rem;color:var(--text3)}
+.auth-tabs{display:flex;background:var(--bg3);border-radius:16px;padding:5px;margin-bottom:2rem}
+.auth-tab{flex:1;padding:10px;border:none;background:none;color:var(--text2);font-size:0.85rem;font-weight:600;border-radius:12px;cursor:pointer}
+.auth-tab.active{background:var(--gradient);color:white}
+.form-group{margin-bottom:1.2rem}
+.form-label{display:block;font-size:0.75rem;font-weight:700;color:var(--text2);margin-bottom:6px}
+.form-input{width:100%;padding:12px 16px;background:var(--bg3);border:2px solid var(--border);border-radius:14px;color:var(--text);font-size:0.9rem;outline:none}
+.form-input:focus{border-color:var(--red);box-shadow:0 0 0 3px var(--red-glow)}
+.btn-primary{width:100%;padding:12px;background:var(--gradient);border:none;border-radius:14px;color:white;font-size:0.9rem;font-weight:700;cursor:pointer}
+.alert{padding:12px;border-radius:14px;font-size:0.8rem;margin-bottom:1.2rem;display:none}
+.alert.show{display:block}
+.alert-error{background:rgba(230,57,70,0.15);border:1px solid rgba(230,57,70,0.3);color:#ff8590}
+.alert-success{background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);color:var(--green)}
+.app-layout{display:flex;min-height:calc(100vh - 64px)}
+.sidebar{width:260px;min-width:260px;background:var(--bg2);border-left:1px solid var(--border);padding:1.2rem 0;position:sticky;top:64px;height:calc(100vh - 64px);overflow-y:auto}
+.sidebar-section{padding:0 0.8rem;margin-bottom:1.5rem}
+.sidebar-label{font-size:0.65rem;font-weight:700;color:var(--text3);padding:0 0.8rem;margin-bottom:0.8rem}
+.sidebar-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;cursor:pointer;color:var(--text2);font-size:0.85rem;font-weight:500;width:100%;text-align:right;background:none;border:none}
+.sidebar-item:hover{background:var(--bg3);color:var(--text)}
+.sidebar-item.active{background:var(--red-glow);color:var(--red)}
+.content{flex:1;padding:1.5rem;overflow-x:hidden}
+.filters-bar{display:flex;align-items:center;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap}
+.filter-chip{padding:6px 16px;border-radius:2rem;border:1px solid var(--border);background:var(--bg2);color:var(--text2);font-size:0.8rem;cursor:pointer}
+.filter-chip.active,.filter-chip:hover{background:var(--red);color:white}
+.search-wrap{margin-right:auto;position:relative}
+.search-input{background:var(--bg2);border:1px solid var(--border);border-radius:2rem;padding:6px 14px 6px 38px;width:200px;color:var(--text);outline:none}
+.search-input:focus{width:240px;border-color:var(--red)}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text3)}
+.channels-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.2rem}
+.channel-card{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;cursor:pointer;transition:all 0.3s}
+.channel-card:hover{transform:translateY(-5px);border-color:var(--red)}
+.channel-thumb{position:relative;height:150px;overflow:hidden}
+.channel-thumb img{width:100%;height:100%;object-fit:cover}
+.live-pill{position:absolute;top:10px;right:10px;background:var(--red);color:white;padding:3px 8px;border-radius:2rem;font-size:0.65rem;display:flex;align-items:center;gap:4px}
+.live-dot{width:6px;height:6px;border-radius:50%;background:white;animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.4}}
+.channel-body{padding:12px}
+.channel-name{font-size:0.95rem;font-weight:700;margin-bottom:4px}
+.channel-meta{display:flex;justify-content:space-between}
+.channel-cat{font-size:0.7rem;color:var(--text3);background:var(--bg3);padding:3px 10px;border-radius:2rem}
+.rooms-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
+.room-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:1.2rem;cursor:pointer;transition:all 0.3s}
+.room-card:hover{transform:translateY(-3px);border-color:var(--red)}
+.room-card.private{border-right:3px solid var(--yellow)}
+.room-card.public{border-right:3px solid var(--green)}
+.room-name{font-size:1rem;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+.room-badge{font-size:0.65rem;padding:2px 8px;border-radius:2rem}
+.room-badge.private{background:rgba(245,158,11,0.15);color:var(--yellow)}
+.room-badge.public{background:rgba(16,185,129,0.15);color:var(--green)}
+.room-desc{font-size:0.78rem;color:var(--text3);margin-bottom:10px}
+.room-footer{display:flex;align-items:center;justify-content:space-between;font-size:0.7rem;flex-wrap:wrap}
+.room-members{display:flex;align-items:center;gap:4px;color:var(--text3)}
+.room-owner-badge{background:var(--red-glow);color:var(--red);padding:2px 8px;border-radius:2rem;font-size:0.65rem}
+.room-members-list{margin-top:10px;padding-top:8px;border-top:1px solid var(--border)}
+.room-members-title{font-size:0.65rem;color:var(--text3);margin-bottom:5px}
+.room-members-tags{display:flex;flex-wrap:wrap;gap:4px}
+.room-member-tag{font-size:0.65rem;background:var(--bg3);padding:2px 8px;border-radius:2rem}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap}
+.page-title{font-size:1.2rem;font-weight:800}
+.btn-create{display:flex;align-items:center;gap:6px;background:var(--red);border:none;color:white;padding:8px 18px;border-radius:12px;font-size:0.8rem;font-weight:600;cursor:pointer}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:3000;justify-content:center;align-items:center;padding:1rem;backdrop-filter:blur(8px)}
+.modal-overlay.open{display:flex}
+.stream-modal{background:var(--bg2);border:1px solid var(--border);border-radius:24px;width:100%;max-width:960px;overflow:hidden}
+.room-modal{background:var(--bg2);border:1px solid var(--border);border-radius:24px;width:100%;max-width:1100px;height:85vh;display:flex;flex-direction:column;overflow:hidden}
+.room-modal-header{padding:1rem 1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.room-modal-body{flex:1;display:flex;overflow:hidden}
+.room-video-side{flex:1;border-left:1px solid var(--border)}
+.room-chat-side{width:330px;display:flex;flex-direction:column}
+.video-wrap{position:relative;padding-bottom:56.25%;height:0;background:#000}
+.video-wrap video,.video-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%}
+.chat-messages{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:10px}
+.chat-message{display:flex;flex-direction:column;margin-bottom:5px}
+.chat-message.own{align-items:flex-end}
+.chat-message.other{align-items:flex-start}
+.chat-bubble{max-width:75%;padding:10px 14px;border-radius:18px;font-size:0.82rem;background:var(--bg3)}
+.chat-message.own .chat-bubble{background:var(--red-glow);color:var(--red)}
+.chat-name{font-size:0.65rem;color:var(--text3);margin-bottom:4px}
+.chat-input-bar{padding:10px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center}
+.chat-input{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:2rem;padding:10px 16px;color:var(--text);font-size:0.85rem;outline:none}
+.chat-input:focus{border-color:var(--red)}
+.chat-send{width:38px;height:38px;border-radius:50%;background:var(--red);border:none;color:white;cursor:pointer}
+.create-modal{background:var(--bg2);border:1px solid var(--border);border-radius:24px;padding:1.5rem;max-width:480px;width:100%}
+.radio-group{display:flex;gap:10px;margin-bottom:1rem}
+.radio-opt{flex:1;padding:14px;border:2px solid var(--border);border-radius:14px;text-align:center;cursor:pointer}
+.radio-opt.selected{border-color:var(--red);background:var(--red-glow)}
+.modal-footer{display:flex;gap:10px;margin-top:1.2rem}
+.btn-cancel{flex:1;padding:10px;border:1px solid var(--border);border-radius:12px;background:none;color:var(--text2);cursor:pointer}
+.btn-confirm{flex:2;padding:10px;background:var(--red);border:none;border-radius:12px;color:white;cursor:pointer}
+.btn-leave-room{background:rgba(230,57,70,0.15);border:1px solid rgba(230,57,70,0.3);color:var(--red);padding:6px 14px;border-radius:2rem;font-size:0.7rem;cursor:pointer;display:flex;align-items:center;gap:6px}
+.btn-leave-room:hover{background:var(--red);color:white}
+.close-btn{width:34px;height:34px;border-radius:10px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);cursor:pointer}
+.close-btn:hover{background:var(--red);color:white}
+.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+@media(max-width:768px){.admin-grid{grid-template-columns:1fr}}
+.admin-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:1.2rem}
+.admin-card-title{font-size:0.8rem;font-weight:700;color:var(--text2);margin-bottom:1rem}
+.admin-form input,.admin-form select{width:100%;padding:10px 12px;margin-bottom:8px;background:var(--bg3);border:1px solid var(--border);border-radius:12px;color:var(--text)}
+.btn-add{width:100%;padding:10px;background:var(--red);border:none;border-radius:12px;color:white;cursor:pointer}
+.list-item{display:flex;align-items:center;justify-content:space-between;padding:10px;border:1px solid var(--border);border-radius:12px;margin-bottom:8px}
+.list-item-name{font-size:0.8rem;font-weight:600}
+.list-item-sub{font-size:0.7rem;color:var(--text3)}
+.btn-del,.btn-edit{width:32px;height:32px;border-radius:8px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.btn-del{background:rgba(230,57,70,0.1);border:1px solid rgba(230,57,70,0.2);color:var(--red)}
+.btn-del:hover{background:var(--red);color:white}
+.btn-edit{background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.2);color:var(--blue);margin-left:5px}
+.perm-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:12px;margin-bottom:8px}
+.toggle{width:40px;height:22px;background:var(--bg);border-radius:11px;position:relative;cursor:pointer;border:1px solid var(--border)}
+.toggle.on{background:var(--red)}
+.toggle::after{content:'';position:absolute;top:2px;right:2px;width:16px;height:16px;border-radius:50%;background:white;transition:transform 0.2s}
+.toggle.on::after{transform:translateX(-18px)}
+.toast-container{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:8px}
+.toast{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:10px;animation:slideIn 0.3s ease}
+@keyframes slideIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+.empty-state{text-align:center;padding:4rem 2rem;color:var(--text3)}
+.empty-state i{font-size:4rem;margin-bottom:1rem;opacity:0.3}
+.loading{display:flex;align-items:center;justify-content:center;padding:4rem}
+.spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--red);border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.dropdown{position:absolute;top:calc(100% + 8px);left:0;background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:8px;min-width:200px;z-index:2000;display:none}
+.dropdown.open{display:block}
+.dropdown-item{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;color:var(--text2);font-size:0.8rem;cursor:pointer;width:100%;text-align:right;background:none;border:none}
+.dropdown-item:hover{background:var(--bg3);color:var(--text)}
+.dropdown-item.danger{color:#ff8590}
+.header-right{position:relative}
+.password-info{font-size:0.7rem;color:var(--text3);margin-top:8px;padding:8px;background:var(--bg3);border-radius:10px}
+@media(max-width:768px){.sidebar{display:none}.room-chat-side{width:100%;height:250px}.room-modal-body{flex-direction:column}}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo" onclick="navigate('home')">
+    <div class="logo-icon">📺</div>
+    <span class="logo-text">KURD<span>WATCH</span></span>
+  </div>
+  <div class="header-actions">
+    <button class="btn-icon" onclick="toggleTheme()" id="themeBtn">🌙</button>
+    <div class="header-right" id="headerRight"></div>
+  </div>
+</header>
+
+<div class="toast-container" id="toastContainer"></div>
+<main id="main"></main>
+
+<div class="modal-overlay" id="streamModal">
+  <div class="stream-modal">
+    <div class="stream-header" style="padding:1rem 1.2rem;display:flex;justify-content:space-between;border-bottom:1px solid var(--border)">
+      <span id="streamTitle" style="font-weight:700"></span>
+      <button class="close-btn" onclick="closeStream()">✕</button>
+    </div>
+    <div class="video-wrap" id="videoWrap"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="createRoomModal">
+  <div class="create-modal">
+    <h3>🏠 ژووری نوێ</h3>
+    <div class="form-group"><label class="form-label">ناوی ژوور</label><input class="form-input" id="roomNameInput" placeholder="ناوی ژوور"></div>
+    <div class="form-group"><label class="form-label">کەناڵ</label><select class="form-input" id="roomChannelSelect"><option value="">بێ کەناڵ</option></select></div>
+    <div class="radio-group"><div class="radio-opt public selected" onclick="selectRoomType('public')"><i class="fas fa-globe"></i><span>گشتی</span></div><div class="radio-opt private" onclick="selectRoomType('private')"><i class="fas fa-lock"></i><span>تایبەت</span></div></div>
+    <div id="roomPassGroup" style="display:none"><div class="form-group"><label class="form-label">پاسۆورد</label><input class="form-input" id="roomPassInput" type="password"></div></div>
+    <div class="modal-footer"><button class="btn-cancel" onclick="closeCreateRoom()">پاشگەز</button><button class="btn-confirm" onclick="createRoom()">دروستکردن</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="joinRoomModal">
+  <div class="create-modal">
+    <h3>🔐 پاسۆوردی ژوور</h3>
+    <input class="form-input" id="joinPassInput" type="password" placeholder="پاسۆورد">
+    <div id="joinPassError" class="alert alert-error"></div>
+    <div class="modal-footer"><button class="btn-cancel" onclick="closeJoinModal()">پاشگەز</button><button class="btn-confirm" onclick="submitJoinRoom()">چوونەژوورەوە</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="permModal">
+  <div class="create-modal">
+    <h3 id="permModalTitle">ڕێکخستنی مافەکان</h3>
+    <div id="permModalBody"></div>
+    <div class="modal-footer"><button class="btn-cancel" onclick="closePermModal()">داخستن</button><button class="btn-confirm" onclick="savePerms()">هەڵگرتن</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="roomModal">
+  <div class="room-modal">
+    <div class="room-modal-header">
+      <div><span id="roomModalTitle" style="font-weight:700"></span><span id="roomMemberCount" style="font-size:0.7rem;margin-right:10px;background:var(--bg3);padding:2px 8px;border-radius:2rem"></span></div>
+      <div style="display:flex;gap:8px"><button class="btn-leave-room" onclick="leaveRoom()"><i class="fas fa-sign-out-alt"></i> دەرچوون</button><button class="close-btn" onclick="closeRoomModal()">✕</button></div>
+    </div>
+    <div class="room-modal-body">
+      <div class="room-video-side"><div class="video-wrap" id="roomVideoWrap"></div></div>
+      <div class="room-chat-side"><div class="chat-messages" id="roomChatMessages"></div><div class="chat-input-bar"><input class="chat-input" id="roomChatInput" placeholder="پەیام بنووسە... (@ناو بۆ mention)"><button class="chat-send" onclick="sendRoomChat()"><i class="fas fa-paper-plane"></i></button></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://lgxcilaegtkjepbqjaql.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxneGNpbGFlZ3RramVwYnFqYXFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExMDM0MDksImV4cCI6MjA5NjY3OTQwOX0.KmY35K60CInUvI96_lq6FzzyJiYuBSduPU3XVmDQ3og';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let currentUser = null, currentPage = 'home', filterCat = 'all', searchQ = '', channelPage = 1;
+let currentStreamChannel = null, streamHls = null, roomHls = null, currentRoomId = null, pendingJoinRoomId = null;
+let permUserId = null, permData = {}, selectedRoomType = 'public', darkMode = true;
+let roomChats = [], roomSub = null, roomMembers = [];
+let loginAttempts = {};
+
+const PASS_RULES = [
+  { id: 'len', label: 'لانی کەم ٨ پیت', test: (p) => p.length >= 8 },
+  { id: 'upper', label: 'پیتی گەورە (A-Z)', test: (p) => /[A-Z]/.test(p) },
+  { id: 'lower', label: 'پیتی بچووک (a-z)', test: (p) => /[a-z]/.test(p) },
+  { id: 'num', label: 'ژمارە (0-9)', test: (p) => /\d/.test(p) },
+  { id: 'sym', label: 'پیتی تایبەت', test: (p) => /[@$!%*?&]/.test(p) },
+];
+function validatePassword(p) { return PASS_RULES.every(r => r.test(p)); }
+
+async function init() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) await loadUser(session.user.id);
+  sb.auth.onAuthStateChange(async (e, session) => { if (session) await loadUser(session.user.id); else { currentUser = null; render(); } });
+  render();
+}
+async function loadUser(id) { 
+  const { data: p } = await sb.from('profiles').select('*').eq('id', id).single(); 
+  const { data: { user } } = await sb.auth.getUser(); 
+  currentUser = { ...user, profile: p }; 
+  render(); 
+}
+function toast(msg, t='success') { 
+  const div = document.createElement('div'); 
+  div.className = `toast ${t}`; 
+  div.innerHTML = `<span>${t==='success'?'✅':'❌'}</span><span>${msg}</span>`; 
+  document.getElementById('toastContainer').appendChild(div); 
+  setTimeout(() => div.remove(), 3000); 
+}
+function toggleTheme() { darkMode = !darkMode; document.body.classList.toggle('light', !darkMode); document.getElementById('themeBtn').textContent = darkMode ? '🌙' : '☀️'; }
+function navigate(p) { currentPage = p; render(); }
+function isAdmin() { return currentUser?.profile?.role === 'owner' || currentUser?.profile?.role === 'admin'; }
+function isOwner() { return currentUser?.profile?.role === 'owner'; }
+function hasPerm(perm) { if (!currentUser?.profile) return false; if (isOwner()) return true; const perms = currentUser.profile.permissions || []; return perms.includes('all') || perms.includes(perm); }
+
+function render() {
+  const hr = document.getElementById('headerRight');
+  if (!currentUser) {
+    hr.innerHTML = '';
+    document.getElementById('main').innerHTML = `<div class="auth-page"><div class="auth-box"><div class="auth-logo"><div class="logo-icon">📺</div><h2>KurdWatch</h2><p>پەخشی راستەوخۆی کەناڵە کوردییەکان</p></div><div class="auth-tabs"><button class="auth-tab active" onclick="showLogin()">چوونەژوورەوە</button><button class="auth-tab" onclick="showReg()">تۆمارکردن</button></div><div id="authBody"></div></div></div>`;
+    showLogin();
+  } else {
+    const uname = currentUser.profile?.username || currentUser.email?.split('@')[0] || 'کارمەند';
+    hr.innerHTML = `<div class="user-badge" onclick="document.getElementById('userDrop').classList.toggle('open')"><div class="user-avatar">${uname[0].toUpperCase()}</div><span>${uname}</span></div><div class="dropdown" id="userDrop"><button class="dropdown-item" onclick="navigate('profile')"><i class="fas fa-user"></i> پرۆفایل</button><button class="dropdown-item" onclick="navigate('rooms')"><i class="fas fa-door-open"></i> ژوورەکان</button><button class="dropdown-item" onclick="navigate('channels')"><i class="fas fa-tv"></i> کەناڵەکان</button>${isAdmin() ? '<button class="dropdown-item" onclick="navigate(\'admin\')"><i class="fas fa-cog"></i> بەڕێوەبردن</button>' : ''}<div class="dropdown-divider"></div><button class="dropdown-item danger" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> دەرچوون</button></div>`;
+    document.getElementById('main').innerHTML = `<div class="app-layout"><div class="sidebar"><div class="sidebar-section"><div class="sidebar-label">منوو</div><button class="sidebar-item ${currentPage==='channels'||currentPage==='home'?'active':''}" onclick="navigate('channels')"><i class="fas fa-tv"></i> کەناڵەکان</button><button class="sidebar-item ${currentPage==='rooms'?'active':''}" onclick="navigate('rooms')"><i class="fas fa-door-open"></i> ژوورەکان</button>${hasPerm('manage_channels')?`<button class="sidebar-item ${currentPage==='admin'?'active':''}" onclick="navigate('admin')"><i class="fas fa-cog"></i> بەڕێوەبردن</button>`:''}</div></div><div class="content" id="pageContent"></div></div>`;
+    if (currentPage === 'channels' || currentPage === 'home') renderChannels();
+    else if (currentPage === 'rooms') renderRooms();
+    else if (currentPage === 'admin') renderAdmin();
+    else if (currentPage === 'profile') renderProfile();
+  }
+}
+
+function showLogin() { 
+  document.getElementById('authBody').innerHTML = `<div id="loginAlert" class="alert alert-error"></div><div class="form-group"><label class="form-label">ئیمەیڵ</label><input class="form-input" id="liEmail" type="email"></div><div class="form-group"><label class="form-label">پاسۆورد</label><input class="form-input" id="liPass" type="password"></div><button class="btn-primary" onclick="doLogin()">چوونەژوورەوە</button>`; 
+}
+function showReg() { 
+  document.getElementById('authBody').innerHTML = `<div id="regAlert" class="alert alert-error"></div><div class="form-group"><label class="form-label">ناو</label><input class="form-input" id="ruName"></div><div class="form-group"><label class="form-label">ئیمەیڵ</label><input class="form-input" id="rEmail" type="email"></div><div class="form-group"><label class="form-label">پاسۆورد</label><input class="form-input" id="rPass" type="password" oninput="checkPasswordRules(this.value)"><div id="passRules" style="margin-top:8px"></div></div><button class="btn-primary" onclick="doRegister()">تۆمارکردن</button>`; 
+}
+function checkPasswordRules(pass) {
+  const c = document.getElementById('passRules');
+  if(!c) return;
+  c.innerHTML = PASS_RULES.map(r => `<div style="font-size:0.7rem;margin:3px 0;color:${r.test(pass)?'var(--green)':'var(--text3)'}"><i class="fas ${r.test(pass)?'fa-check-circle':'fa-circle'}"></i> ${r.label}</div>`).join('');
+}
+async function doLogin() { 
+  const e = document.getElementById('liEmail').value, p = document.getElementById('liPass').value;
+  const a = document.getElementById('loginAlert');
+  const at = loginAttempts[e] || { count: 0, blockedUntil: null };
+  if(at.blockedUntil && Date.now() < at.blockedUntil) { a.className='alert alert-error show'; a.textContent=`چاوەڕێ بکە ${Math.ceil((at.blockedUntil-Date.now())/60000)} خولەک`; return; }
+  const { error } = await sb.auth.signInWithPassword({ email:e, password:p });
+  if(error) { 
+    at.count = (at.count||0)+1;
+    if(at.count>=5){ at.blockedUntil=Date.now()+15*60*1000; at.count=0; a.textContent='زیاتر لە ٥ جار هەوڵت داوە، ١٥ خولەک چاوەڕێ بکە'; }
+    else a.textContent=`ئیمەیڵ یان پاسۆورد هەڵەیە (${5-at.count} هەوڵ)`;
+    a.className='alert alert-error show';
+    loginAttempts[e]=at;
+  }
+}
+async function doRegister() { 
+  const u = document.getElementById('ruName').value, e = document.getElementById('rEmail').value, p = document.getElementById('rPass').value;
+  const a = document.getElementById('regAlert');
+  if(!u||!e||!p){ a.className='alert alert-error show'; a.textContent='پڕ کردنەوەی هەموو خانەکان پێویستە'; return; }
+  if(!validatePassword(p)){ a.className='alert alert-error show'; a.textContent='پاسۆوردەکە مەرجەکانی جێبەجێ ناکات'; return; }
+  const { data, error } = await sb.auth.signUp({ email:e, password:p, options:{ data:{ username:u } } });
+  if(error){ a.className='alert alert-error show'; a.textContent=error.message; return; }
+  if(data?.user){
+    const { count } = await sb.from('profiles').select('*',{ count:'exact', head:true });
+    await sb.from('profiles').upsert({ id:data.user.id, username:u, email:e, role:count===0?'owner':'user', permissions:count===0?['all']:[] });
+    a.className='alert alert-success show'; a.textContent='✅ ئەکاونت دروست کرا! ئێستا بچۆ ژوورەوە';
+    setTimeout(()=>showLogin(),2000);
+  }
+}
+async function doLogout() { await sb.auth.signOut(); currentUser=null; render(); }
+
+function renderProfile() { 
+  const u = currentUser.profile||{};
+  document.getElementById('pageContent').innerHTML = `<div class="page-header"><h2>👤 پرۆفایل</h2></div><div class="admin-card"><div class="form-group"><label>ناو</label><input class="form-input" id="profName" value="${u.username||''}"></div><div class="form-group"><label>ئیمەیڵ</label><input class="form-input" value="${currentUser.email}" disabled></div><div class="form-group"><label>ڕۆڵ</label><input class="form-input" value="${u.role||'user'}" disabled></div><button class="btn-primary" onclick="updateProfile()">نوێکردنەوە</button></div>`; 
+}
+async function updateProfile() { const n=document.getElementById('profName').value; if(!n) return; await sb.from('profiles').update({ username:n }).eq('id',currentUser.id); toast('نوێکرایەوە'); await loadUser(currentUser.id); }
+
+async function renderChannels() { 
+  document.getElementById('pageContent').innerHTML = `<div class="page-header"><h2>📺 کەناڵەکان</h2></div><div class="filters-bar">${['all','kurdish','sport','news','entertainment'].map(c=>`<button class="filter-chip ${filterCat===c?'active':''}" onclick="setFilter('${c}')">${c==='all'?'هەمووی':c==='kurdish'?'کوردی':c==='sport'?'وەرزش':c==='news'?'هەواڵ':'هونەری'}</button>`).join('')}<div class="search-wrap"><i class="fas fa-search search-icon"></i><input class="search-input" placeholder="گەڕان..." oninput="searchChannels(this.value)"></div></div><div id="channelsList"><div class="loading"><div class="spinner"></div></div></div>`; 
+  await loadChannels(); 
+}
+async function loadChannels() { 
+  let q = sb.from('channels').select('*',{count:'exact'}); 
+  if(filterCat!=='all') q=q.eq('category',filterCat); 
+  if(searchQ) q=q.ilike('name',`%${searchQ}%`); 
+  q=q.range((channelPage-1)*8, channelPage*8-1); 
+  const {data}=await q; const c=document.getElementById('channelsList'); 
+  if(!data?.length){ c.innerHTML='<div class="empty-state"><i class="fas fa-tv"></i><h3>هیچ کەناڵێک نیە</h3></div>'; return; } 
+  c.innerHTML=`<div class="channels-grid">${data.map(ch=>`<div class="channel-card" onclick="openStream(${ch.id})"><div class="channel-thumb"><img src="${ch.image||'https://placehold.co/400x220/1a1a2e/e63946?text='+encodeURIComponent(ch.name)}"><div class="live-pill"><div class="live-dot"></div>LIVE</div></div><div class="channel-body"><div class="channel-name">${ch.name}</div><div class="channel-meta"><span class="channel-cat">${ch.category==='kurdish'?'کوردی':ch.category==='sport'?'وەرزش':ch.category==='news'?'هەواڵ':'هونەری'}</span></div></div></div>`).join('')}</div>`; 
+}
+function setFilter(c){ filterCat=c; channelPage=1; renderChannels(); }
+function searchChannels(q){ searchQ=q; channelPage=1; loadChannels(); }
+async function openStream(id){ const{data:ch}=await sb.from('channels').select('*').eq('id',id).single(); if(!ch)return; currentStreamChannel=ch; document.getElementById('streamTitle').innerHTML=ch.name; const w=document.getElementById('videoWrap'); if(ch.live_url&&(ch.live_url.includes('.m3u8')||ch.live_url.includes('hls'))){ w.innerHTML='<video id="streamVideo" controls autoplay style="width:100%;height:100%"></video>'; const v=document.getElementById('streamVideo'); if(streamHls)streamHls.destroy(); streamHls=new Hls(); streamHls.loadSource(ch.live_url); streamHls.attachMedia(v); }else if(ch.live_url){ w.innerHTML=`<iframe src="${ch.live_url}" frameborder="0" style="width:100%;height:100%"></iframe>`; } document.getElementById('streamModal').classList.add('open'); }
+function closeStream(){ document.getElementById('streamModal').classList.remove('open'); if(streamHls)streamHls.destroy(); currentStreamChannel=null; }
+
+// ==================== ROOMS FUNCTIONS ====================
+async function renderRooms() { 
+  document.getElementById('pageContent').innerHTML = `<div class="page-header"><h2>🏠 ژوورەکان</h2><button class="btn-create" onclick="openCreateRoom()">+ ژووری نوێ</button></div><div id="roomsList"><div class="loading"><div class="spinner"></div></div></div>`; 
+  await loadRooms(); 
+}
+async function loadRooms() { 
+  const { data } = await sb.from('rooms').select('*').order('created_at',{ascending:false}); 
+  const c=document.getElementById('roomsList'); 
+  if(!c)return; 
+  if(!data?.length){ c.innerHTML='<div class="empty-state"><i class="fas fa-door-closed"></i><h3>هیچ ژوورێک نیە</h3></div>'; return; } 
+  c.innerHTML=`<div class="rooms-grid">${await Promise.all(data.map(async r=>{
+    const isPrivate=r.is_private===true, isOwnerRoom=r.owner_id===currentUser?.id;
+    let members=[]; if(isOwnerRoom){ const{data:m}=await sb.from('room_members').select('*, profiles(username)').eq('room_id',r.id); members=m||[]; }
+    const memberCount=members.length||r.member_count||0;
+    return `<div class="room-card ${isPrivate?'private':'public'}" onclick="joinRoom(${r.id},${isPrivate},'${r.owner_id}')"><div class="room-name">${r.name}<span class="room-badge ${isPrivate?'private':'public'}"><i class="fas fa-${isPrivate?'lock':'globe'}"></i> ${isPrivate?'تایبەت':'گشتی'}</span></div><div class="room-desc">${r.description||''}</div><div class="room-footer"><span class="room-members"><i class="fas fa-users"></i> ${memberCount} کەس</span><span class="room-channel">${r.channel_name||''}</span>${isOwnerRoom?'<span class="room-owner-badge">خاوەن</span>':''}</div>${isOwnerRoom&&members.length?`<div class="room-members-list"><div class="room-members-title">ئەندامەکان:</div><div class="room-members-tags">${members.map(m=>`<span class="room-member-tag">${m.profiles?.username||'نەناسراو'}</span>`).join('')}</div></div>`:''}${isOwnerRoom&&r.is_private&&r.password_hash?`<div class="password-info"><i class="fas fa-key"></i> پاسۆورد: ${atob(r.password_hash)}</div>`:''}</div>`;
+  }))}</div>`; 
+}
+async function openCreateRoom(){ const{data}=await sb.from('channels').select('id,name'); const s=document.getElementById('roomChannelSelect'); if(s) s.innerHTML='<option value="">بێ کەناڵ</option>'+ (data||[]).map(c=>`<option value="${c.id}" data-name="${c.name}">${c.name}</option>`).join(''); document.getElementById('createRoomModal').classList.add('open'); }
+function closeCreateRoom(){ document.getElementById('createRoomModal').classList.remove('open'); }
+function selectRoomType(t){ selectedRoomType=t; document.querySelectorAll('.radio-opt').forEach(el=>el.classList.remove('selected')); document.querySelector(`.radio-opt.${t}`).classList.add('selected'); document.getElementById('roomPassGroup').style.display=t==='private'?'block':'none'; }
+async function createRoom(){ const n=document.getElementById('roomNameInput').value.trim(); const s=document.getElementById('roomChannelSelect'); const cId=s.value||null; const cName=cId?s.options[s.selectedIndex]?.dataset?.name||'':''; const p=document.getElementById('roomPassInput').value; if(!n){toast('ناوی ژوور پێویستە','error');return;} if(selectedRoomType==='private'&&!p){toast('پاسۆورد پێویستە','error');return;} const d={name:n,owner_id:currentUser.id,channel_id:cId,channel_name:cName,is_private:selectedRoomType==='private',member_count:1}; if(selectedRoomType==='private') d.password_hash=btoa(p); const{error}=await sb.from('rooms').insert(d); if(error){toast('هەڵە: '+error.message,'error');return;} closeCreateRoom(); toast(`ژوور دروست کرا`); renderRooms(); }
+async function joinRoom(id,isPrivate,ownerId){ if(isPrivate===true&&ownerId!==currentUser?.id){ pendingJoinRoomId=id; document.getElementById('joinPassInput').value=''; document.getElementById('joinPassError').style.display='none'; document.getElementById('joinRoomModal').classList.add('open'); }else{ const{data:ex}=await sb.from('room_members').select('*').eq('room_id',id).eq('user_id',currentUser.id); if(!ex||ex.length===0){ await sb.from('room_members').insert({room_id:id,user_id:currentUser.id}); const{data:rm}=await sb.from('rooms').select('member_count').eq('id',id).single(); if(rm) await sb.from('rooms').update({member_count:(rm.member_count||0)+1}).eq('id',id); } openRoom(id); } }
+function closeJoinModal(){ document.getElementById('joinRoomModal').classList.remove('open'); }
+async function submitJoinRoom(){ const p=document.getElementById('joinPassInput').value; const{data:rm}=await sb.from('rooms').select('password_hash').eq('id',pendingJoinRoomId).single(); if(rm.password_hash!==btoa(p)){ document.getElementById('joinPassError').innerHTML='پاسۆورد هەڵەیە'; document.getElementById('joinPassError').style.display='block'; return; } closeJoinModal(); await sb.from('room_members').upsert({room_id:pendingJoinRoomId,user_id:currentUser.id}); openRoom(pendingJoinRoomId); }
+
+// ==================== CHAT FUNCTIONS ====================
+async function openRoom(id) { 
+  currentRoomId = id; 
+  const { data: room } = await sb.from('rooms').select('*').eq('id', id).single(); 
+  if (!room) return; 
+  document.getElementById('roomModalTitle').innerHTML = `${room.name} ${room.is_private ? '<i class="fas fa-lock"></i>' : '<i class="fas fa-globe"></i>'}`; 
+  await loadRoomMembers(id); 
+  if (room.channel_id) { 
+    const { data: ch } = await sb.from('channels').select('*').eq('id', room.channel_id).single(); 
+    if (ch) { 
+      const wrap = document.getElementById('roomVideoWrap'); 
+      if (ch.live_url && (ch.live_url.includes('.m3u8') || ch.live_url.includes('hls'))) { 
+        wrap.innerHTML = '<video id="roomVideo" controls autoplay style="width:100%;height:100%"></video>'; 
+        const v = document.getElementById('roomVideo'); 
+        if (roomHls) roomHls.destroy(); 
+        roomHls = new Hls(); 
+        roomHls.loadSource(ch.live_url); 
+        roomHls.attachMedia(v); 
+      } else if (ch.live_url) { 
+        wrap.innerHTML = `<iframe src="${ch.live_url}" frameborder="0" style="width:100%;height:100%"></iframe>`; 
+      } 
+    } 
+  } 
+  document.getElementById('roomModal').classList.add('open'); 
+  await loadRoomChat(id); 
+}
+
+async function loadRoomMembers(roomId) { 
+  const { data } = await sb.from('room_members').select('*, profiles(username)').eq('room_id', roomId); 
+  roomMembers = data || []; 
+  document.getElementById('roomMemberCount').innerHTML = `${roomMembers.length} کەس`;
+}
+
+async function loadRoomChat(roomId) { 
+  const { data: messages } = await sb
+    .from('room_chats')
+    .select('*')
+    .eq('room_id', roomId)
+    .order('created_at', { ascending: true });
+  
+  const userIds = [...new Set((messages || []).map(m => m.user_id))];
+  const { data: profiles } = await sb
+    .from('profiles')
+    .select('id, username')
+    .in('id', userIds);
+  
+  const usernameMap = {};
+  if (profiles) {
+    profiles.forEach(p => { usernameMap[p.id] = p.username; });
+  }
+  
+  roomChats = (messages || []).map(m => ({
+    ...m,
+    profile_name: usernameMap[m.user_id] || 'بەکارهێنەر'
+  }));
+  
+  renderRoomChats();
+  
+  if (roomSub) {
+    try { sb.removeChannel(roomSub); } catch(e) {}
+  }
+  
+  roomSub = sb
+    .channel(`room_${roomId}`)
+    .on('postgres_changes', 
+      { event: 'INSERT', schema: 'public', table: 'room_chats', filter: `room_id=eq.${roomId}` }, 
+      async (payload) => { 
+        const { data: userProfile } = await sb
+          .from('profiles')
+          .select('username')
+          .eq('id', payload.new.user_id)
+          .single();
+        
+        const newMsg = {
+          ...payload.new,
+          profile_name: userProfile?.username || 'بەکارهێنەر'
+        };
+        roomChats.push(newMsg); 
+        renderRoomChats(); 
+      }
+    )
+    .subscribe(); 
+}
+
+function renderRoomChats() { 
+  const container = document.getElementById('roomChatMessages'); 
+  if (!container) return; 
+  if (!roomChats || roomChats.length === 0) { 
+    container.innerHTML = '<div style="padding:2rem;text-align:center;color:gray">هیچ پەیامێک نیە</div>'; 
+    return; 
+  }
+  container.innerHTML = roomChats.map(msg => { 
+    const isOwn = msg.user_id === currentUser?.id; 
+    const username = msg.profile_name || 'بەکارهێنەر';
+    let messageText = msg.message || ''; 
+    messageText = messageText.replace(/@(\w+)/g, '<span class="mention-tag">@$1</span>'); 
+    return `<div class="chat-message ${isOwn ? 'own' : 'other'}"><div class="chat-name">${username}</div><div class="chat-bubble">${messageText}</div></div>`; 
+  }).join(''); 
+  container.scrollTop = container.scrollHeight; 
+}
+
+async function sendRoomChat() { 
+  const input = document.getElementById('roomChatInput'); 
+  const message = input.value.trim(); 
+  if (!message) return; 
+  if (!currentRoomId) { toast('هیچ ژوورێک کراوە نیە', 'error'); return; }
+  input.value = ''; 
+  const { error } = await sb.from('room_chats').insert({ 
+    room_id: currentRoomId, 
+    user_id: currentUser.id, 
+    message: message,
+    reactions: {}
+  }); 
+  if (error) { 
+    toast('پەیام نەنێردرا', 'error');
+    input.value = message;
+  } else {
+    toast('پەیام نێردرا ✅', 'success');
+  }
+}
+
+// ==================== FIXED: LEAVE ROOM ====================
+async function leaveRoom() { 
+  if (!currentRoomId) return;
+  if (!confirm('دڵنیای لە دەرچوون؟')) return;
+  await sb.from('room_members').delete().eq('room_id', currentRoomId).eq('user_id', currentUser.id);
+  const { data: room } = await sb.from('rooms').select('member_count, owner_id').eq('id', currentRoomId).single();
+  if (room) {
+    const newCount = Math.max(0, (room.member_count || 1) - 1);
+    await sb.from('rooms').update({ member_count: newCount }).eq('id', currentRoomId);
+    if (room.owner_id === currentUser?.id && newCount === 0) {
+      await sb.from('rooms').delete().eq('id', currentRoomId);
+      toast('ژوورەکە سڕایەوە');
+    } else {
+      toast('دەرچوویت ✅');
+    }
+  }
+  closeRoomModal();
+  renderRooms();
+}
+
+// ==================== FIXED: CLOSE ROOM MODAL (کارا) ====================
+function closeRoomModal() { 
+  try {
+    // 1. مۆدالی ژوور دابخە
+    const modal = document.getElementById('roomModal');
+    if (modal) {
+      modal.classList.remove('open');
+      console.log('Modal closed successfully');
+    }
+    
+    // 2. ڤیدیۆی HLS ڕابگرە
+    if (roomHls) {
+      try {
+        roomHls.destroy();
+      } catch(e) {
+        console.error('HLS destroy error:', e);
+      }
+      roomHls = null;
+    }
+    
+    // 3. Subscriptionـەکەی چات ببەستە
+    if (roomSub) {
+      try {
+        sb.removeChannel(roomSub);
+      } catch(e) {
+        console.error('Channel remove error:', e);
+      }
+      roomSub = null;
+    }
+    
+    // 4. ناوەڕۆکی ڤیدیۆ پاک بکەرەوە
+    const videoWrap = document.getElementById('roomVideoWrap');
+    if (videoWrap) {
+      videoWrap.innerHTML = '';
+    }
+    
+    // 5. پەیامەکانی چات پاک بکەرەوە
+    const chatMessages = document.getElementById('roomChatMessages');
+    if (chatMessages) {
+      chatMessages.innerHTML = '<div style="padding:2rem;text-align:center;color:gray">هیچ پەیامێک نیە</div>';
+    }
+    
+    // 6. ئینپوتەکەی چات پاک بکەرەوە
+    const chatInput = document.getElementById('roomChatInput');
+    if (chatInput) {
+      chatInput.value = '';
+    }
+    
+    // 7. ڕێگای پەڕەکە (overflow) بگەڕێنەوە
+    document.body.style.overflow = '';
+    
+    // 8. ستەیتەکان پاک بکەرەوە
+    currentRoomId = null;
+    roomChats = [];
+    
+    console.log('Room closed completely');
+    
+  } catch (error) {
+    console.error('Close room error:', error);
+  }
+}
+
+// ==================== FIXED: DELETE CHANNEL (کارا) ====================
+async function delChannel(id){ 
+  if(!confirm('دڵنیای لە سڕینەوەی ئەم کەناڵە؟')) return; 
+  
+  try {
+    // یەکەم: هەموو ژوورەکانی پەیوەست بەم کەناڵە نوێ بکەرەوە (channel_name بەتاڵ بکەرەوە)
+    const { error: updateError } = await sb
+      .from('rooms')
+      .update({ channel_id: null, channel_name: '' })
+      .eq('channel_id', id);
+    
+    if (updateError) {
+      console.error('Error updating rooms:', updateError);
+    }
+    
+    // دووەم: کەناڵەکە بسڕەوە
+    const { error: deleteError } = await sb
+      .from('channels')
+      .delete()
+      .eq('id', id);
+    
+    if (deleteError) {
+      toast('هەڵە لە سڕینەوەی کەناڵ: ' + deleteError.message, 'error');
+      return;
+    }
+    
+    toast('کەناڵ بە سەرکەوتوویی سڕایەوە ✅');
+    
+    // سێیەم: لیستی کەناڵەکان نوێ بکەرەوە
+    await loadAdminChannels();
+    
+    // چوارەم: ئەگەر لە پەڕەی کەناڵەکان دایت، ئەویش نوێ بکەرەوە
+    if (currentPage === 'channels' || currentPage === 'home') {
+      renderChannels();
+    }
+    
+  } catch (error) {
+    console.error('Delete channel error:', error);
+    toast('هەڵەیەک ڕوویدا لە کاتی سڕینەوە', 'error');
+  }
+}
+
+// ==================== ADMIN ====================
+async function renderAdmin() { 
+  document.getElementById('pageContent').innerHTML = `<div class="page-header"><h2>⚙️ بەڕێوەبردن</h2></div><div class="admin-grid"><div class="admin-card"><div class="admin-card-title"><i class="fas fa-plus"></i> کەناڵی نوێ</div><div class="admin-form"><input id="cName" placeholder="ناو"><input id="cImage" placeholder="وێنە"><select id="cCat"><option value="kurdish">کوردی</option><option value="sport">وەرزش</option><option value="news">هەواڵ</option><option value="entertainment">هونەری</option></select><input id="cUrl" placeholder="لینکی پەخش"><button class="btn-add" onclick="addChannel()">زیادکردن</button></div></div><div class="admin-card"><div class="admin-card-title"><i class="fas fa-list"></i> کەناڵەکان</div><div id="adminChannels"></div></div>${isOwner()?`<div class="admin-card"><div class="admin-card-title"><i class="fas fa-users"></i> بەکارهێنەران</div><div id="adminUsers"></div></div>`:''}</div>`; 
+  await loadAdminChannels(); 
+  if(isOwner()) await loadAdminUsers(); 
+}
+async function loadAdminChannels() { 
+  const{data}=await sb.from('channels').select('*'); 
+  const c=document.getElementById('adminChannels'); 
+  if(!c)return; 
+  if(!data?.length){ c.innerHTML='<p>هیچ کەناڵێک نیە</p>'; return; } 
+  c.innerHTML=data.map(ch=>`<div class="list-item"><div><div class="list-item-name">${ch.name}</div><div class="list-item-sub">${ch.category}</div></div><button class="btn-del" onclick="delChannel(${ch.id})"><i class="fas fa-trash"></i></button></div>`).join(''); 
+}
+async function loadAdminUsers() { 
+  const{data}=await sb.from('profiles').select('*').order('created_at'); 
+  const c=document.getElementById('adminUsers'); 
+  if(!c)return; 
+  c.innerHTML=data.map(u=>`<div class="list-item"><div><div class="list-item-name">${u.username||u.email}</div><div class="list-item-sub">ڕۆڵ: ${u.role} | ماف: ${(u.permissions||[]).join(',')||'هیچ'}</div></div><button class="btn-edit" onclick="openPermModal('${u.id}','${u.username||u.email}')"><i class="fas fa-edit"></i></button><button class="btn-del" onclick="delUser('${u.id}')"><i class="fas fa-trash"></i></button></div>`).join(''); 
+}
+async function addChannel(){ const n=document.getElementById('cName').value, img=document.getElementById('cImage').value, cat=document.getElementById('cCat').value, url=document.getElementById('cUrl').value; if(!n||!url){ toast('ناو و لینک پێویستە','error'); return; } await sb.from('channels').insert({ name:n, image:img||null, category:cat, live_url:url, views:0 }); toast('کەناڵ زیاد کرا ✅'); await loadAdminChannels(); renderChannels(); }
+async function delUser(id){ if(!confirm('دڵنیای؟')) return; await sb.from('profiles').delete().eq('id',id); toast('بەکارهێنەر سڕایەوە'); await loadAdminUsers(); }
+const PERMS = [{key:'manage_channels',label:'بەڕێوەبردنی کەناڵ'},{key:'manage_rooms',label:'بەڕێوەبردنی ژوور'},{key:'manage_users',label:'بەڕێوەبردنی بەکارهێنەران'},{key:'all',label:'هەموو مافەکان'}];
+async function openPermModal(id,name){ permUserId=id; const{data:u}=await sb.from('profiles').select('permissions').eq('id',id).single(); const perms=u?.permissions||[]; permData={}; PERMS.forEach(p=>permData[p.key]=perms.includes(p.key)); document.getElementById('permModalTitle').innerHTML=`مافەکانی ${name}`; document.getElementById('permModalBody').innerHTML=PERMS.map(p=>`<div class="perm-item"><span>${p.label}</span><div class="toggle ${permData[p.key]?'on':''}" onclick="togglePerm('${p.key}')"></div></div>`).join(''); document.getElementById('permModal').classList.add('open'); }
+function togglePerm(k){ permData[k]=!permData[k]; const t=document.querySelector(`#permModal .toggle[onclick="togglePerm('${k}')"]`); if(t) t.classList.toggle('on',permData[k]); }
+async function savePerms(){ const perms=Object.entries(permData).filter(([_,v])=>v).map(([k])=>k); await sb.from('profiles').update({permissions:perms}).eq('id',permUserId); closePermModal(); toast('مافەکان هەڵگیران ✅'); await loadAdminUsers(); }
+function closePermModal(){ document.getElementById('permModal').classList.remove('open'); }
+
+init();
+</script>
+</body>
+</html>
