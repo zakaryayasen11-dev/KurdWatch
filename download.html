@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ckb" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#e63946">
+<title>دابەزاندنی KURD WATCH</title>
+<meta property="og:title" content="دابەزاندنی ئەپی KURD WATCH">
+<meta property="og:description" content="پەخشی راستەوخۆی کەناڵە کوردیەکان — بۆ ئەندرۆید، ویندۆز و ئایڤۆن">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#06060f;--bg2:#0d0d1c;--bg3:#141428;--card:#101020;
+  --border:#ffffff10;--border2:#ffffff18;
+  --red:#e63946;--red2:#c1121f;--red-soft:rgba(230,57,70,.08);--red-glow:rgba(230,57,70,.2);
+  --text:#eeeeff;--text2:#9090b8;--text3:#55557e;
+  --green:#10b981;--blue:#3b82f6;--purple:#8b5cf6;--gold:#f5b942;
+  --gradient:linear-gradient(135deg,#e63946 0%,#c1121f 100%);
+  --shadow:0 24px 64px rgba(0,0,0,.7);--shadow-red:0 8px 32px rgba(230,57,70,.28);
+  --radius:20px;--tr:all .22s cubic-bezier(.4,0,.2,1);
+}
+body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;direction:rtl;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+
+.hero-bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.orb{position:absolute;border-radius:50%;filter:blur(110px);opacity:.5}
+.orb1{width:600px;height:600px;background:var(--red);top:-220px;right:-160px}
+.orb2{width:460px;height:460px;background:var(--purple);bottom:-160px;left:-120px;opacity:.28}
+
+.wrap{position:relative;z-index:1;max-width:820px;margin:0 auto;padding:3rem 1.4rem 5rem}
+
+.top{text-align:center;margin-bottom:2.6rem}
+.logo-badge{width:76px;height:76px;border-radius:22px;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-size:34px;margin:0 auto 1.1rem;box-shadow:var(--shadow-red)}
+.top h1{font-size:1.9rem;font-weight:900;letter-spacing:-1px;margin-bottom:8px}
+.top h1 em{color:var(--red);font-style:normal}
+.top p{color:var(--text2);font-size:.92rem;max-width:440px;margin:0 auto;line-height:1.6}
+
+.platform-tabs{display:flex;gap:8px;background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:6px;margin-bottom:1.8rem}
+.ptab{flex:1;padding:12px 8px;border:none;background:none;color:var(--text2);border-radius:11px;cursor:pointer;font-family:inherit;font-size:.82rem;font-weight:700;transition:var(--tr);display:flex;flex-direction:column;align-items:center;gap:5px}
+.ptab i{font-size:1.3rem}
+.ptab.active{background:var(--gradient);color:#fff;box-shadow:var(--shadow-red)}
+
+.panel{display:none;animation:fadeIn .3s ease}
+.panel.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.dl-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.8rem;margin-bottom:1.2rem}
+.dl-head{display:flex;align-items:center;gap:14px;margin-bottom:1.4rem}
+.dl-icon{width:50px;height:50px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;color:#fff}
+.dl-icon.android{background:linear-gradient(135deg,#3ddc84,#0f9d58)}
+.dl-icon.windows{background:linear-gradient(135deg,#00a4ef,#0078d4)}
+.dl-icon.ios{background:linear-gradient(135deg,#8b5cf6,#6d28d9)}
+.dl-head h2{font-size:1.15rem;font-weight:800}
+.dl-head p{font-size:.72rem;color:var(--text3);margin-top:2px}
+
+.dl-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:15px;border-radius:14px;background:var(--gradient);color:#fff;font-weight:800;font-size:.92rem;box-shadow:var(--shadow-red);transition:var(--tr);margin-bottom:1.6rem}
+.dl-btn:hover{transform:translateY(-2px);opacity:.94}
+.dl-btn i{font-size:1.1rem}
+.dl-btn .sub{font-size:.65rem;font-weight:500;opacity:.85;display:block;margin-top:1px}
+
+.steps{list-style:none;counter-reset:step}
+.steps li{counter-increment:step;display:flex;gap:13px;padding:14px 0;border-top:1px solid var(--border)}
+.steps li:first-child{border-top:none}
+.step-num{width:28px;height:28px;border-radius:9px;background:var(--red-soft);border:1px solid rgba(230,57,70,.25);color:var(--red);font-weight:900;font-size:.82rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.steps li::before{content:counter(step)}
+.step-num::before{content:counter(step)}
+.step-body{flex:1;padding-top:3px}
+.step-body b{font-size:.86rem;font-weight:700;display:block;margin-bottom:2px}
+.step-body span{font-size:.78rem;color:var(--text2);line-height:1.6}
+.step-body .kbd{display:inline-block;background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:1px 8px;font-size:.76rem;font-weight:700;color:var(--text)}
+
+.note{display:flex;gap:10px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:13px;padding:12px 14px;margin-top:1.2rem;font-size:.78rem;color:var(--text2);line-height:1.6}
+.note i{color:var(--blue);flex-shrink:0;margin-top:2px}
+.note.warn{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.2)}
+.note.warn i{color:var(--gold)}
+
+.ios-visual{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:1.6rem;background:var(--bg3);border-radius:16px;padding:1.6rem 1rem;position:relative;overflow:hidden}
+.ios-phone{width:120px;height:220px;background:#000;border-radius:22px;border:3px solid #333;position:relative;flex-shrink:0;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.ios-phone .notch{position:absolute;top:6px;left:50%;transform:translateX(-50%);width:44px;height:6px;background:#222;border-radius:4px}
+.ios-phone .row{position:absolute;left:10px;right:10px;height:22px;background:var(--bg2);border-radius:6px;display:flex;align-items:center;padding:0 6px;gap:6px}
+.ios-phone .row.share{bottom:14px;background:var(--gradient)}
+.ios-phone .icon-grid{position:absolute;top:36px;left:10px;right:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.ios-phone .app-dot{width:100%;aspect-ratio:1;border-radius:8px;background:linear-gradient(135deg,#333,#222)}
+.ios-phone .app-dot.kw{background:var(--gradient)}
+
+.contact-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.6rem;text-align:center;margin-top:2rem}
+.contact-card h3{font-size:.95rem;font-weight:800;margin-bottom:6px}
+.contact-card p{font-size:.78rem;color:var(--text3);margin-bottom:1.1rem}
+.contact-row{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.contact-btn{display:flex;align-items:center;gap:8px;padding:9px 18px;background:var(--bg3);border:1px solid var(--border2);border-radius:2rem;font-size:.78rem;font-weight:700;transition:var(--tr)}
+.contact-btn:hover{background:var(--gradient);border-color:transparent;color:#fff}
+
+.foot{text-align:center;margin-top:2.4rem;font-size:.72rem;color:var(--text3)}
+.foot .dot{color:var(--red);margin:0 6px}
+
+@media(max-width:480px){
+  .wrap{padding:2rem 1rem 4rem}
+  .top h1{font-size:1.5rem}
+  .ptab span{font-size:.72rem}
+}
+</style>
+</head>
+<body>
+<div class="hero-bg"><div class="orb orb1"></div><div class="orb orb2"></div></div>
+
+<div class="wrap">
+  <div class="top">
+    <div class="logo-badge">📺</div>
+    <h1>KURD<em>WATCH</em></h1>
+    <p>پەخشی راستەوخۆی کەناڵە کوردیەکان، ژوور و چات، XP و زیاتر — ئێستا وەک ئەپلیکەیشن لەسەر هەموو ئامێرەکانت</p>
+  </div>
+
+  <div class="platform-tabs">
+    <button class="ptab active" data-p="android" onclick="showPanel('android')"><i class="fa-brands fa-android"></i><span>ئەندرۆید</span></button>
+    <button class="ptab" data-p="windows" onclick="showPanel('windows')"><i class="fa-brands fa-windows"></i><span>ویندۆز</span></button>
+    <button class="ptab" data-p="ios" onclick="showPanel('ios')"><i class="fa-brands fa-apple"></i><span>ئایفۆن / ئایپاد</span></button>
+  </div>
+
+  <!-- ANDROID -->
+  <div class="panel active" id="panel-android">
+    <div class="dl-card">
+      <div class="dl-head">
+        <div class="dl-icon android"><i class="fa-brands fa-android"></i></div>
+        <div><h2>دابەزاندن بۆ ئەندرۆید</h2><p>فایلی APK · ڕاستەوخۆ دابمەزرێنە</p></div>
+      </div>
+      <a class="dl-btn" href="https://www.mediafire.com/file/w52swr9y6t79ap4/KURD_WATCH.apk/file" target="_blank" rel="noopener">
+        <i class="fas fa-download"></i>
+        <span>داگرتنی APK<span class="sub">لە ڕێگەی MediaFire</span></span>
+      </a>
+      <ul class="steps">
+        <li><div class="step-num"></div><div class="step-body"><b>لینکەکە بکەرەوە</b><span>لینکی سەرەوە لە وێبگەڕی مۆبایلی ئەندرۆیدەکەت بکەرەوە و کلیک لە دوگمەی <span class="kbd">Download</span> بکە</span></div></li>
+        <li><div class="step-num"></div><div class="step-body"><b>فایلەکە بکەرەوە</b><span>دوای تەواوبوونی داگرتن، فایلەکە بکەرەوە لە بەشی Notifications یان فۆڵدەری Downloads</span></div></li>
+        <li><div class="step-num"></div><div class="step-body"><b>ڕێگە بدە بە دامەزراندن</b><span>ئەگەر پەیامێک هات دەڵێت <i>"ئەم جۆرە فایلە لە شوێنێکی نەزانراوەوە دێت"</i>، کلیک لە <span class="kbd">Settings</span> بکە و <span class="kbd">Allow from this source</span> چالاک بکە، پاشان بگەڕێوە</span></div></li>
+        <li><div class="step-num"></div><div class="step-body"><b>دامەزرێنە</b><span>کلیک لە <span class="kbd">Install</span> بکە و چاوەڕوان بە</span></div></li>
+        <li><div class="step-num"></div><div class="step-body"><b>کردنەوە 🎉</b><span>کلیک لە <span class="kbd">Open</span> بکە — ئێستا ئامادەیت بۆ بەکارهێنان!</span></div></li>
+      </ul>
+      <div class="note">
+        <i class="fas fa-circle-info"></i>
+        <span>ئەم ئاگادارییە ئاساییە و مانای ئەوە نییە ئەپەکە کێشەی هەیە — تەنها لەبەر ئەوەی لە Google Play دانلۆد نەبووە.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- WINDOWS -->
+  <div class="panel" id="panel-windows">
+    <div class="dl-card">
+      <div class="dl-head">
+        <div class="dl-icon windows"><i class="fa-brands fa-windows"></i></div>
+        <div><h2>دابەزاندن بۆ ویندۆز</h2><p>فایلی MSIX · بۆ ویندۆز ١٠ و ١١</p></div>
+      </div>
+      <a class="dl-btn" href="https://www.mediafire.com/file/3jyuzz2czw0adqd/KURD+WATCH.sideload.msix/file" target="_blank" rel="noopener">
+        <i class="fas fa-download"></i>
+        <span>داگرتنی MSIX<span class="sub">لە ڕێگەی MediaFire</span></span>
+      </a>
+      <ul class="steps">
+        <li><div class="step-num"></div><div class="step-body"><b>لینکەکە بکەرەوە</b><span>لینکی سەرەوە لە کۆمپیوتەری ویندۆزەکەت بکەرەوە و کلیک لە دوگمەی <span class="kbd">Download</span> بکە</span></div></li>
+        <li><div class="step-num"></div><div class="step-body"><b>فایلەکە بکەرەوە</b><span>دوای تەواوبوونی داگرتن، دووبارە کلیک لەسەر فایلەکە بکە (لای Downloads)</span></div></li>
+        <li><div class="step-num"></div><div class="step-body"><b>"Run anyway" هەڵبژێرە</b><span>ئەگەر پەیامێک هات دەڵێت <i>"Windows protected your PC"</i>، کلیک لە <span class="kbd">More info</span> بکە پاشان <span class="kbd">Run anyway</span></span></div></li>
+        <li><div class="step-num"></div><div class="step-body"><b>دامەزرێنە</b><span>کلیک لە <span class="kbd">Install</span> بکە و چاوەڕوان بە</span></div></li>
+        <li><div class="step-num"></div><div class="step-body"><b>ئامادەیە 🎉</b><span>ئەپەکە خۆکار دەکرێتەوە — یان بیدۆزەوە لە مینیۆی Start</span></div></li>
+      </ul>
+      <div class="note">
+        <i class="fas fa-circle-info"></i>
+        <span>ئەگەر App Installer پێشتر لەسەر سیستەمەکەت دامەزراوبێت (کە زۆرجار خۆکار هەیە لەسەر ویندۆز ١٠/١١)، دامەزراندن زۆر ئاسانترە.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- iOS -->
+  <div class="panel" id="panel-ios">
+    <div class="dl-card">
+      <div class="dl-head">
+        <div class="dl-icon ios"><i class="fa-brands fa-apple"></i></div>
+        <div><h2>دابەزاندن بۆ ئایفۆن / ئایپاد</h2><p>وەک ئەپی ڕاستەقینە — بەبێ App Store</p></div>
+      </div>
+
+      <div class="ios-visual">
+        <div class="ios-phone">
+          <div class="notch"></div>
+          <div class="icon-grid">
+            <div class="app-dot"></div><div class="app-dot"></div><div class="app-dot"></div>
+            <div class="app-dot"></div><div class="app-dot kw"></div><div class="app-dot"></div>
+          </div>
+          <div class="row share"><i class="fas fa-arrow-up-from-bracket" style="color:#fff;font-size:10px"></i></div>
+        </div>
+      </div>
+
+      <ul class="steps">
+        <li><div class="step-num"></div><div class="step-body"><b>ماڵپەڕەکە بکەرەوە بە Safari</b><span>گرنگە: تەنها لە <b>Safari</b> کاردەکات، نەک Chrome یان هیچ وێبگەڕێکی تر لەسەر ئایفۆن</span></div></li>
+        <li><div class="step-num"></div><div class="step-body"><b>دوگمەی هاوبەشکردن بدۆزەوە</b><span>لە خوارەوەی شاشەکە (یان سەرەوە لەسەر iPad)، کلیک لە ئایکۆنی <span class="kbd"><i class="fas fa-arrow-up-from-bracket"></i> Share</span> بکە</span></div></li>
+        <li><div class="step-num"></div><div class="step-body"><b>"Add to Home Screen" هەڵبژێرە</b><span>لیستەکە خوارەوە بسڕەوە تا <span class="kbd">Add to Home Screen</span> ببینیت، کلیکی لێ بکە</span></div></li>
+        <li><div class="step-num"></div><div class="step-body"><b>"Add" دابگرە</b><span>ناوی ئەپەکە (KURD WATCH) و ئایکۆنەکەی خۆکارانە دەردەکەوێت — تەنها کلیک لە <span class="kbd">Add</span> لای سەرەوەی ڕاست بکە</span></div></li>
+        <li><div class="step-num"></div><div class="step-body"><b>ئامادەیە 🎉</b><span>لۆگۆی KURD WATCH ئێستا لەسەر سەرەکی شاشەکەتە — کلیکی لێ بکە و وەک ئەپێکی ڕاستەقینە دەکرێتەوە (بەبێ نواری وێبگەڕ)</span></div></li>
+      </ul>
+      <div class="note warn">
+        <i class="fas fa-triangle-exclamation"></i>
+        <span>ئایفۆن ڕێگە بە دامەزراندنی ئەپی دەرەکی (لە دەرەوەی App Store) نادات، بۆیە ئەم شێوازە باشترین ڕێگەیە — هەروا کاردەکات وەک ئەپی ڕاستەقینە، ئایکۆنی خۆی و بەبێ نواری وێبگەڕ.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="contact-card">
+    <h3>پرسیارت هەیە یان کێشەیەکت تووش بوو؟</h3>
+    <p>پەیوەندیمان پێوە بکە، خۆشحاڵ دەبین یارمەتیت بدەین</p>
+    <div class="contact-row">
+      <a class="contact-btn" href="https://t.me/zakaria_yasen00" target="_blank" rel="noopener"><i class="fa-brands fa-telegram"></i> تیلیگرام</a>
+      <a class="contact-btn" href="mailto:zakaryarwandzy86@gmail.com"><i class="fas fa-envelope"></i> ئیمەیل</a>
+    </div>
+  </div>
+
+  <div class="foot">KURD WATCH <span class="dot">●</span> پەخشی راستەوخۆ <span class="dot">●</span> ژوور و چات <span class="dot">●</span> XP و زیاتر</div>
+</div>
+
+<script>
+function showPanel(p){
+  document.querySelectorAll('.ptab').forEach(b=>b.classList.toggle('active',b.dataset.p===p));
+  document.querySelectorAll('.panel').forEach(pn=>pn.classList.toggle('active',pn.id==='panel-'+p));
+}
+</script>
+</body>
+</html>
