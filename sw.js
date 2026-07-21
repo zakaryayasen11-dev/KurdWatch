@@ -2,7 +2,6 @@
 // Deliberately does NOT cache Supabase API calls, HLS video segments, or third-party CDN
 // scripts — only the app shell (this file's own origin, static assets). Live TV, chat, and
 // data always go straight to the network so nothing ever goes stale or breaks playback.
-
 const CACHE_NAME = 'kurdwatch-shell-v1';
 const APP_SHELL = [
   '/',
@@ -11,7 +10,6 @@ const APP_SHELL = [
   '/icons/icon-192.png',
   '/icons/icon-512.png',
 ];
-
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -19,7 +17,6 @@ self.addEventListener('install', (event) => {
       .then(() => self.skipWaiting())
   );
 });
-
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys()
@@ -27,14 +24,11 @@ self.addEventListener('activate', (event) => {
       .then(() => self.clients.claim())
   );
 });
-
 self.addEventListener('fetch', (event) => {
   const req = event.request;
-
   // Only handle same-origin GET requests for the app shell. Everything else (Supabase,
   // Tenor/GIPHY, HLS.js CDN, video segments, WebSocket/Realtime) passes straight through.
   if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) return;
-
   event.respondWith(
     caches.match(req).then((cached) => {
       const network = fetch(req)
@@ -48,6 +42,43 @@ self.addEventListener('fetch', (event) => {
         .catch(() => cached); // offline: fall back to cache
       // Stale-while-revalidate: serve cache immediately if we have it, refresh in background.
       return cached || network;
+    })
+  );
+});
+
+// ── WEB PUSH — real system notifications, even when the app/tab is closed ──
+self.addEventListener('push', event => {
+  let data = {};
+  try {
+    data = event.data.json();
+  } catch (e) {
+    data = { title: 'KURD WATCH', body: event.data ? event.data.text() : '' };
+  }
+
+  const title = data.title || 'KURD WATCH';
+  const options = {
+    body: data.body || '',
+    icon: data.icon || 'icons/icon-192.png',
+    badge: 'icons/icon-192.png',
+    data: { url: data.url || '/' },
+  };
+
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  const url = (event.notification.data && event.notification.data.url) || '/';
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
+      // If the app is already open in a tab, just focus that tab instead of opening a new one.
+      for (const client of clientList) {
+        if (client.url.includes(self.location.origin) && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) return clients.openWindow(url);
     })
   );
 });
